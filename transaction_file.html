@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Receipt Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+
+    /* ══ FORM ══ */
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+      padding: 38px 34px;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .form-icon {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, #1a56db, #0ea5e9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 11px;
+      font-size: 24px;
+      color: #fff;
+    }
+
+    .form-header h1 {
+      font-size: 20px;
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .form-header p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      margin: 18px 0 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9px;
+      font-size: 13.5px;
+      color: #1e293b;
+      background: #f8fafc;
+      outline: none;
+      transition: border .2s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #1a56db;
+      background: #fff;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #1a56db, #0ea5e9);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity .2s;
+    }
+
+    .submit-btn:hover {
+      opacity: .91;
+    }
+
+    #err-msg {
+      text-align: center;
+      font-size: 13px;
+      color: #dc2626;
+      margin-top: 7px;
+      min-height: 16px;
+    }
+
+    /* ══ RECEIPT ══ */
+    .receipt-wrap {
+      display: none;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    /* Bank header */
+    .bank-header {
+      background: #fff;
+      border-radius: 14px 14px 0 0;
+      padding: 16px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .bank-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bank-logo-wrap {
+      flex-shrink: 0;
+      width: 140px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bank-logo-wrap img {
+      max-width: 140px;
+      max-height: 56px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .vdivider {
+      width: 1.5px;
+      height: 52px;
+      background: #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .bank-name-block .bname {
+      font-size: 13.5px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .bank-name-block .bsub {
+      font-size: 10.5px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .bank-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.95;
+      flex-shrink: 0;
+    }
+
+    .bank-meta strong {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    .accent-strip {
+      height: 3.5px;
+      width: 100%;
+    }
+
+    /* Receipt body */
+    .receipt-card {
+      background: #fff;
+      border-radius: 0 0 14px 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .13);
+      overflow: hidden;
+    }
+
+    .receipt-banner {
+      padding: 22px 32px 28px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .check-circle {
+      width: 58px;
+      height: 58px;
+      background: rgba(255, 255, 255, .2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-size: 26px;
+    }
+
+    .receipt-banner h2 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .receipt-banner .sub {
+      font-size: 11.5px;
+      opacity: .82;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .txn-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, .18);
+      border-radius: 20px;
+      padding: 5px 18px;
+      font-size: 12.5px;
+      margin-top: 10px;
+      letter-spacing: .3px;
+    }
+
+    .receipt-body {
+      padding: 22px 30px;
+    }
+
+    .e-receipt-title {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e8edf3;
+      font-size: 13.5px;
+    }
+
+    .receipt-row:last-child {
+      border-bottom: none;
+    }
+
+    .r-label {
+      color: #64748b;
+      font-weight: 500;
+      flex: 0 0 45%;
+    }
+
+    .r-value {
+      color: #1e293b;
+      font-weight: 600;
+      text-align: right;
+      flex: 0 0 54%;
+    }
+
+    .amount-row .r-value {
+      font-size: 18px;
+    }
+
+    .receipt-footer {
+      background: #f8fafc;
+      padding: 13px 30px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      line-height: 1.7;
+    }
+
+    .receipt-actions {
+      display: flex;
+      gap: 10px;
+      padding: 15px 26px;
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-back,
+    .btn-dl {
+      flex: 1;
+      padding: 11px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .2s;
+    }
+
+    .btn-back {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .btn-dl {
+      color: #fff;
+    }
+
+    .btn-back:hover,
+    .btn-dl:hover {
+      opacity: .87;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .receipt-wrap {
+        display: block !important;
+      }
+
+      .receipt-actions {
+        display: none !important;
+      }
+
+      .form-card {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════ FORM ════ -->
+  <div class="form-card" id="form-page">
+    <div class="form-header">
+      <div class="form-icon">🧾</div>
+      <h1>Print Transaction Receipt</h1>
+      <p>Enter the completed transaction details below</p>
+    </div>
+
+    <div class="section-label">Sender's Bank Info</div>
+    <div class="field-group">
+      <label>Select Bank *</label>
+      <select id="bankSelect" onchange="onBankChange()">
+        <option value="">— Choose a bank —</option>
+        <option value="sbi">State Bank of India (SBI)</option>
+        <option value="hdfc">HDFC Bank</option>
+        <option value="icici">ICICI Bank</option>
+        <option value="axis">Axis Bank</option>
+        <option value="pnb">Punjab National Bank (PNB)</option>
+        <option value="bob">Bank of Baroda</option>
+        <option value="canara">Canara Bank</option>
+        <option value="federal">Federal Bank</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div id="otherBankField" style="display:none" class="field-group">
+      <label>Bank Full Name *</label>
+      <input type="text" id="otherBankName" placeholder="Enter full bank name" />
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>Branch Name</label>
+        <input type="text" id="branchName" placeholder="e.g. THALASSERI" />
+      </div>
+      <div class="field-group">
+        <label>Branch Code</label>
+        <input type="text" id="branchCode" placeholder="e.g. 1776" />
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>Branch IFSC</label>
+        <input type="text" id="branchIFSC" placeholder="e.g. KSBK0001776" style="text-transform:uppercase" />
+      </div>
+      <div class="field-group">
+        <label>Branch Contact</label>
+        <input type="text" id="branchContact" placeholder="e.g. 0490 2320362" />
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Branch Address</label>
+      <input type="text" id="branchAddress" placeholder="e.g. 47/810,811, THALASSERI, KANNUR" />
+    </div>
+
+    <div class="section-label">Transaction Details</div>
+    <div class="field-group">
+      <label>Transaction ID *</label>
+      <input type="text" id="txnId" placeholder="Enter the exact transaction ID" />
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>From Account No. *</label>
+        <input type="text" id="fromAcc" placeholder="Account number" />
+      </div>
+      <div class="field-group">
+        <label>To Account No. *</label>
+        <input type="text" id="toAcc" placeholder="Account number" />
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Payee Name *</label>
+      <input type="text" id="payeeName" placeholder="e.g. SABDHAN MIAH" />
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>Amount (₹) *</label>
+        <input type="number" id="amount" placeholder="0.00" min="0" />
+      </div>
+      <div class="field-group">
+        <label>Transaction Mode</label>
+        <select id="txnMode">
+          <option>IMPS</option>
+          <option>NEFT</option>
+          <option>RTGS</option>
+          <option>UPI</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>Date *</label>
+        <input type="date" id="txnDate" />
+      </div>
+      <div class="field-group">
+        <label>Time *</label>
+        <input type="time" id="txnTime" />
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Payee Bank Name</label>
+      <input type="text" id="payeeBankName" placeholder="e.g. STATE BANK OF INDIA(SBI)" />
+    </div>
+    <div class="row-2">
+      <div class="field-group">
+        <label>Payee IFSC Code</label>
+        <input type="text" id="payeeIFSC" placeholder="e.g. SBIN0000216" style="text-transform:uppercase" />
+      </div>
+      <div class="field-group">
+        <label>Remarks</label>
+        <input type="text" id="remarks" placeholder="Optional" />
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="handleSubmit()">Generate Receipt ➜</button>
+    <div id="err-msg"></div>
+  </div>
+
+  <!-- ════ RECEIPT ════ -->
+  <div class="receipt-wrap" id="receipt-page">
+    <div id="bank-header-area"></div>
+    <div class="receipt-card">
+      <div class="receipt-banner" id="receipt-banner">
+        <div class="check-circle">✓</div>
+        <h2>Successful</h2>
+        <div class="sub">SUCCESS</div>
+        <div class="txn-badge" id="r-txnId">Transaction ID: —</div>
+      </div>
+      <div class="receipt-body">
+        <div class="e-receipt-title">E-Receipt</div>
+        <div class="receipt-row"><span class="r-label">From Account</span><span class="r-value" id="r-fromAcc">—</span>
+        </div>
+        <div class="receipt-row"><span class="r-label">Payee Name</span><span class="r-value" id="r-payeeName">—</span>
+        </div>
+        <div class="receipt-row"><span class="r-label">To Account</span><span class="r-value" id="r-toAcc">—</span>
+        </div>
+        <div class="receipt-row amount-row"><span class="r-label">Amount</span><span class="r-value"
+            id="r-amount">—</span></div>
+        <div class="receipt-row"><span class="r-label">Remarks</span><span class="r-value" id="r-remarks">—</span></div>
+        <div class="receipt-row"><span class="r-label">Date</span><span class="r-value" id="r-date">—</span></div>
+        <div class="receipt-row"><span class="r-label">Payee Bank Name</span><span class="r-value"
+            id="r-payeeBank">—</span></div>
+        <div class="receipt-row"><span class="r-label">IFSC Code</span><span class="r-value" id="r-payeeIFSC">—</span>
+        </div>
+        <div class="receipt-row"><span class="r-label">Transaction Mode</span><span class="r-value"
+            id="r-txnMode">—</span></div>
+      </div>
+      <div class="receipt-footer">
+        This is a computer generated statement and does not require any signature.
+      </div>
+      <div class="receipt-actions">
+        <button class="btn-back" onclick="goBack()">← Edit Details</button>
+        <button class="btn-dl" id="dl-btn" onclick="downloadReceipt()">⬇ Download / Print</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Official logos via Clearbit (pulls from each bank's own website)
+    const BANKS = {
+      sbi: {
+        name: "State Bank of India",
+        sub: "The Banker to Every Indian",
+        logo: "SBICARD.NS.png",
+        accent: "#1a3c6e",
+        branch: {
+          name: "THAMARASSERY",
+          code: "14576",
+          ifsc: "SBIN0014576",
+          contact: "0495 2222266",
+          address: "Diamond Plaza, Chungam, Main Road, Thamarassery, Kozhikode, Kerala - 673573"
+        }
+      },
+      hdfc: {
+        name: "HDFC Bank",
+        sub: "We Understand Your World",
+        logo: "HDB_BIG.png",
+        accent: "#004c8f",
+        branch: {
+          name: "THAMARASSERY",
+          code: "3010",
+          ifsc: "HDFC0003010",
+          contact: "0495 2273010",
+          address: "VK Shopping Complex, Opp KSRTC Bus Stand, Thamarassery, Kozhikode - 673573"
+        }
+      },
+      icici: {
+        name: "ICICI Bank",
+        sub: "Khayal Apka",
+        logo: "IBN_BIG.png",
+        accent: "#f37320",
+        branch: {
+          name: "THAMARASSERY",
+          code: "2672",
+          ifsc: "ICIC0002672",
+          contact: "0495 2272672",
+          address: "City Centre, Koyilandy Road, Thamarassery Chungam, Kozhikode - 673573"
+        }
+      },
+      axis: {
+        name: "Axis Bank",
+        sub: "Badhte Ka Naam Zindagi",
+        logo: "AXISBANK.BO_BIG.png",
+        accent: "#97144d",
+        branch: {
+          name: "THAMARASSERY",
+          code: "4711",
+          ifsc: "UTIB0004711",
+          contact: "0495 2274711",
+          address: "VKH Building, Kozhikode-Wayanad Road, Thamarassery - 673573"
+        }
+      },
+      pnb: {
+        name: "Punjab National Bank",
+        sub: "The Name You Can Bank Upon",
+        logo: "PNB.NS_BIG.png",
+        accent: "#f26522",
+        branch: {
+          name: "KODUVALLY",
+          code: "667700",
+          ifsc: "PUNB0667700",
+          contact: "0495 2215700",
+          address: "KM Complex, Koduvally Town, Kozhikode - 673572"
+        }
+      },
+      bob: {
+        name: "Bank of Baroda",
+        sub: "India's International Bank",
+        logo: "BANKBARODA.NS_BIG.png",
+        accent: "#f58220",
+        branch: {
+          name: "SM STREET",
+          code: "CALICU",
+          ifsc: "BARB0CALICU",
+          contact: "0495 2724401",
+          address: "SM Street, Kozhikode, Kerala - 673001"
+        }
+      },
+      canara: {
+        name: "Canara Bank",
+        sub: "Together We Can",
+        logo: "CANBK.NS_BIG.png",
+        accent: "#00529b",
+        branch: {
+          name: "THAMARASSERY",
+          code: "0826",
+          ifsc: "CNRB0000826",
+          contact: "0495 2270826",
+          address: "Laila Nilayam, Main Road, Thamarassery, Kozhikode - 673573"
+        }
+      },
+      federal: {
+        name: "Federal Bank",
+        sub: "Your Perfect Banking Partner",
+        logo: "FEDERALBNK.NS.png",
+        accent: "#0033a0",
+        branch: {
+          name: "THAMARASSERY",
+          code: "1414",
+          ifsc: "FDRL0001414",
+          contact: "0495 2271414",
+          address: "Maharani Shopping Complex, Wayanad Road, Thamarassery - 673573"
+        }
+      }
+    };
+
+    function onBankChange() {
+      const key = document.getElementById('bankSelect').value;
+
+      const otherField = document.getElementById('otherBankField');
+      otherField.style.display = key === 'other' ? 'block' : 'none';
+
+      // Clear fields first
+      document.getElementById('branchName').value = '';
+      document.getElementById('branchCode').value = '';
+      document.getElementById('branchIFSC').value = '';
+      document.getElementById('branchContact').value = '';
+      document.getElementById('branchAddress').value = '';
+
+      if (key && key !== 'other' && BANKS[key]) {
+        const branch = BANKS[key].branch;
+
+        document.getElementById('branchName').value = branch.name;
+        document.getElementById('branchCode').value = branch.code;
+        document.getElementById('branchIFSC').value = branch.ifsc;
+        document.getElementById('branchContact').value = branch.contact;
+        document.getElementById('branchAddress').value = branch.address;
+      }
+    }
+
+    function formatAmount(v) {
+      return '₹ ' + parseFloat(v).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDateTime(dateStr, timeStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr + 'T' + (timeStr || '00:00'));
+      const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      let h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return String(d.getDate()).padStart(2, '0') + ' ' + M[d.getMonth()] + ' ' + d.getFullYear() +
+        (timeStr ? ' ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ' ' + ap : '');
+    }
+
+    function buildBankHeader(key, branch, branchCode, ifsc, contact, address, customName) {
+      let name, sub, logoUrl, accent;
+
+      if (key === 'other') {
+        name = customName || 'Bank';
+        sub = '';
+        logoUrl = null;
+        accent = '#1a56db';
+      } else {
+        const b = BANKS[key];
+        name = b.name;
+        sub = b.sub;
+        logoUrl = b.logo;
+        accent = b.accent;
+      }
+
+      const logoBlock = logoUrl
+        ? `<div class="bank-logo-wrap">
+         <img src="${logoUrl}" alt="${name} logo"
+              onerror="this.parentNode.innerHTML='<div style=\\'font-weight:800;font-size:15px;color:${accent};max-width:130px;line-height:1.2;\\'>${name}</div>'"/>
+       </div>`
+        : `<div class="bank-logo-wrap"><div style="font-weight:800;font-size:15px;color:${accent};line-height:1.2;">${name}</div></div>`;
+
+      const metaLines = [];
+      if (branch) metaLines.push(`<strong>Branch Name:</strong> ${branch.toUpperCase()}`);
+      if (branchCode) metaLines.push(`<strong>Branch Code:</strong> ${branchCode}`);
+      if (contact) metaLines.push(`<strong>Branch Contact:</strong> ${contact}`);
+      if (ifsc) metaLines.push(`<strong>IFSC:</strong> ${ifsc.toUpperCase()}`);
+      if (address) metaLines.push(`<strong>Branch Address:</strong> ${address}`);
+
+      return `
+    <div class="bank-header" style="border-top:4px solid ${accent};">
+      <div class="bank-left">
+        ${logoBlock}
+        <div class="vdivider"></div>
+        <div class="bank-name-block">
+          <div class="bname" style="color:${accent};">${name}</div>
+          ${sub ? `<div class="bsub">${sub}</div>` : ''}
+        </div>
+      </div>
+      ${metaLines.length ? `<div class="bank-meta">${metaLines.join('<br>')}</div>` : ''}
+    </div>
+    <div class="accent-strip" style="background:linear-gradient(90deg,${accent},${accent}88);"></div>`;
+    }
+
+    function handleSubmit() {
+      const key = document.getElementById('bankSelect').value;
+      const txnId = document.getElementById('txnId').value.trim();
+      const fromAcc = document.getElementById('fromAcc').value.trim();
+      const toAcc = document.getElementById('toAcc').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const payee = document.getElementById('payeeName').value.trim();
+      const mode = document.getElementById('txnMode').value;
+      const pBank = document.getElementById('payeeBankName').value.trim();
+      const pIFSC = document.getElementById('payeeIFSC').value.trim().toUpperCase();
+      const remarks = document.getElementById('remarks').value.trim() || '-';
+      const date = document.getElementById('txnDate').value;
+      const time = document.getElementById('txnTime').value;
+      const branch = document.getElementById('branchName').value.trim();
+      const bCode = document.getElementById('branchCode').value.trim();
+      const bIFSC = document.getElementById('branchIFSC').value.trim().toUpperCase();
+      const bContact = document.getElementById('branchContact').value.trim();
+      const bAddr = document.getElementById('branchAddress').value.trim();
+      const custom = document.getElementById('otherBankName').value.trim();
+
+      if (!key || !txnId || !fromAcc || !toAcc || !amount || !payee) {
+        document.getElementById('err-msg').textContent = 'Please fill in all required fields (*).'; return;
+      }
+      document.getElementById('err-msg').textContent = '';
+
+      // Bank header
+      document.getElementById('bank-header-area').innerHTML =
+        buildBankHeader(key, branch, bCode, bIFSC, bContact, bAddr, custom);
+
+      // Receipt rows
+      document.getElementById('r-txnId').textContent = 'Transaction ID: ' + txnId;
+      document.getElementById('r-fromAcc').textContent = fromAcc;
+      document.getElementById('r-payeeName').textContent = payee.toUpperCase();
+      document.getElementById('r-toAcc').textContent = toAcc;
+      document.getElementById('r-amount').textContent = formatAmount(amount);
+      document.getElementById('r-remarks').textContent = remarks;
+      document.getElementById('r-date').textContent = formatDateTime(date, time);
+      document.getElementById('r-payeeBank').textContent = pBank || '—';
+      document.getElementById('r-payeeIFSC').textContent = pIFSC || '—';
+      document.getElementById('r-txnMode').textContent = mode;
+
+      // Banner & download button color
+      const accent = (key !== 'other' && BANKS[key]) ? BANKS[key].accent : '#1a56db';
+      document.getElementById('receipt-banner').style.background = `linear-gradient(135deg,${accent} 0%,${accent}bb 100%)`;
+      document.getElementById('dl-btn').style.background = `linear-gradient(135deg,${accent},${accent}bb)`;
+      document.getElementById('r-amount').style.color = accent;
+
+      document.getElementById('form-page').style.display = 'none';
+      document.getElementById('receipt-page').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function downloadReceipt() {
+      const actions = document.querySelector('.receipt-actions');
+      actions.style.display = 'none';
+      window.print();
+      setTimeout(() => actions.style.display = 'flex', 800);
+    }
+
+    function goBack() {
+      document.getElementById('form-page').style.display = 'block';
+      document.getElementById('receipt-page').style.display = 'none';
+    }
+  </script>
+</body>
+
+</html>
