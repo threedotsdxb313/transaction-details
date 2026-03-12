@@ -212,6 +212,7 @@
     .bene-acc {
       font-size: 10.5px; font-weight: 400; color: #64748b;
       margin-top: 1px; font-family: 'Courier New', monospace;
+      white-space: nowrap;
     }
 
     /* ── Detail rows ── */
@@ -297,14 +298,14 @@
     @media print {
       @page {
         size: A4 portrait;
-        margin: 0;            /* removes browser header/footer zone */
+        margin: 0;
       }
 
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
       body {
         background: #fff !important;
-        padding: 14mm 0 !important;   /* safe inset without browser chrome */
+        padding: 14mm 0 !important;
         margin: 0 !important;
         display: block !important;
       }
@@ -472,10 +473,6 @@
         <span class="d-value" id="r-date">—</span>
       </div>
       <div class="detail-row">
-        <span class="d-label">Beneficiary A/C</span>
-        <span class="d-value" id="r-toAccDetail">—</span>
-      </div>
-      <div class="detail-row">
         <span class="d-label">Debit A/C No.</span>
         <span class="d-value" id="r-fromAcc">—</span>
       </div>
@@ -513,7 +510,6 @@ const BANKS = {
   kerala:  { name:"Kerala Bank",                sub:"Kerala State Co-operative Bank",  logo:"Kerala_Bank.png",       accent:"#7b1818" },
 };
 
-// ── Fixed 5 account numbers (only last 4 shown) ──
 const ACCOUNTS = [
   '200145632178',
   '500378912045',
@@ -606,17 +602,14 @@ function handleSubmit() {
   const accent = (key!=='other' && BANKS[key]) ? BANKS[key].accent : '#1a56db';
 
   const toAccRaw  = toAcc;
-  // Mask to-account: show last 4 digits only
-  const toAccMask = toAccRaw.length >= 4
-    ? 'XXXX XXXX ' + toAccRaw.slice(-4)
-    : toAccRaw;
+  // Show full account number in the Paid to section
+  const toAccFull = toAccRaw;
 
   document.getElementById('bank-header-area').innerHTML = buildBankHeader(key, custom);
   document.getElementById('r-amount').textContent      = formatAmount(amount);
   document.getElementById('r-amount').style.color      = '';
   document.getElementById('r-payeeName').textContent   = payee;
-  document.getElementById('r-toAcc').textContent       = 'A/c •••• ' + toAccRaw.slice(-4);
-  document.getElementById('r-toAccDetail').textContent = toAccMask;
+  document.getElementById('r-toAcc').textContent       = 'A/C ' + toAccFull;
   document.getElementById('r-txnId').textContent       = txnId;
   document.getElementById('r-txnMode').textContent     = mode;
   document.getElementById('r-date').textContent        = formatDateTime(date, time);
