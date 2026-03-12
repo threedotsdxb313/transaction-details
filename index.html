@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>E-Receipt Generator</title>
+  <title> </title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,214 +78,215 @@
     .receipt-wrap {
       display: none;
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
     }
 
     /* ── Bank Header ── */
     .bank-header {
       background: #fff;
-      border-radius: 18px 18px 0 0;
-      border-top: 5px solid #000;
-      padding: 14px 20px;
+      border-radius: 16px 16px 0 0;
+      border-top: 4px solid #000;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
       gap: 12px;
       overflow: hidden;
-      padding-left: 50px;
     }
 
     .bank-logo-wrap {
-      flex: 0 0 96px;
-      height: 38px;
+      flex: 0 0 88px;
+      height: 36px;
       overflow: hidden;
       display: flex;
       align-items: center;
     }
     .bank-logo-wrap img {
       display: block;
-      width: 96px;
-      height: 38px;
+      width: 88px;
+      height: 36px;
       object-fit: contain;
       object-position: left center;
     }
 
     .hdr-divider {
       flex: 0 0 1px;
-      height: 34px;
+      height: 30px;
       background: #e2e8f0;
     }
 
-    .bank-name-block {
-      flex: 1 1 0;
-      min-width: 0;
-    }
+    .bank-name-block { flex: 1 1 0; min-width: 0; }
     .bank-name-block .bname {
-      font-size: 14px;
-      font-weight: 900;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 13px; font-weight: 800; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .bank-name-block .bsub {
-      font-size: 9.5px;
-      color: #94a3b8;
-      font-weight: 500;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 9px; color: #94a3b8; font-weight: 400; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     .accent-strip {
-      height: 3px;
-      width: 100%;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      height: 3px; width: 100%;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
 
     /* ── Receipt Card ── */
     .receipt-card {
       background: #fff;
-      border-radius: 0 0 18px 18px;
-      box-shadow: 0 10px 40px rgba(0,0,0,.14);
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
       overflow: hidden;
     }
 
     /* ── Hero ── */
     .amount-hero {
-      padding: 28px 24px 22px;
+      padding: 24px 20px 18px;
       text-align: center;
+      border-bottom: 1px solid #f1f5f9;
     }
 
     .tick-wrap {
-      width: 70px; height: 70px;
-      margin: 0 auto 16px;
+      width: 56px; height: 56px;
+      margin: 0 auto 12px;
       position: relative;
     }
-    /* outer glow ring — screen only */
     .tick-wrap::before {
       content: '';
       position: absolute;
-      inset: -8px;
+      inset: -6px;
       border-radius: 50%;
       background: rgba(22,163,74,.1);
     }
     .tick-circle {
-      width: 70px; height: 70px;
+      width: 56px; height: 56px;
       border-radius: 50%;
       background: #16a34a;
       display: flex; align-items: center; justify-content: center;
       position: relative;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
-    .tick-circle svg { width: 34px; height: 34px; display: block; }
+    .tick-circle svg { width: 26px; height: 26px; display: block; }
 
+    .hero-status {
+      font-size: 10.5px; font-weight: 600; color: #16a34a;
+      letter-spacing: .5px; margin-bottom: 10px;
+    }
     .hero-label {
-      font-size: 10.5px; font-weight: 700; color: #94a3b8;
-      text-transform: uppercase; letter-spacing: 1.5px;
-      margin-bottom: 5px;
+      font-size: 10px; font-weight: 400; color: #94a3b8;
+      letter-spacing: .8px; margin-bottom: 3px; text-transform: uppercase;
     }
     .hero-amount {
-      font-size: 40px; font-weight: 900;
-      letter-spacing: -1.5px; line-height: 1;
+      font-size: 34px; font-weight: 800;
+      letter-spacing: -0.5px; line-height: 1;
+      color: #0f172a;
     }
 
-    .hero-sep {
-      width: 36px; height: 2px; border-radius: 2px;
-      background: #e2e8f0; margin: 14px auto;
+    /* Beneficiary card */
+    .bene-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid #e9eef5;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 14px 0 0;
+      text-align: left;
     }
-
-    .hero-to {
-      font-size: 10.5px; font-weight: 700; color: #94a3b8;
-      text-transform: uppercase; letter-spacing: 1px;
+    .bene-avatar {
+      flex-shrink: 0;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex; align-items: center; justify-content: center;
     }
-    .hero-payee {
-      font-size: 18px; font-weight: 900; color: #0f172a;
-      margin-top: 4px; letter-spacing: .2px;
+    .bene-avatar svg { width: 18px; height: 18px; display: block; }
+    .bene-info { flex: 1; min-width: 0; }
+    .bene-label {
+      font-size: 9px; font-weight: 600; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 2px;
     }
-    .hero-acc {
-      font-size: 12px; font-weight: 500; color: #94a3b8;
-      margin-top: 4px; letter-spacing: 2px;
+    .bene-name {
+      font-size: 13px; font-weight: 700; color: #0f172a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bene-acc {
+      font-size: 10.5px; font-weight: 400; color: #64748b;
+      margin-top: 1px; font-family: 'Courier New', monospace;
     }
 
     /* ── Detail rows ── */
     .detail-table {
-      margin: 6px 18px 6px;
-      border: 1.5px solid #eef1f6;
-      border-radius: 12px;
+      margin: 14px 16px 0;
+      border-radius: 10px;
       overflow: hidden;
+      border: 1px solid #e9eef5;
     }
 
     .detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 15px;
-      border-bottom: 1px solid #eef1f6;
+      padding: 11px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 8px;
     }
     .detail-row:last-child { border-bottom: none; }
-    .detail-row:nth-child(even) {
-      background: #f9fafb;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
 
     .d-label {
-      font-size: 12px; font-weight: 600; color: #64748b;
+      font-size: 11.5px; font-weight: 400; color: #64748b;
+      flex-shrink: 0;
     }
     .d-value {
-      font-size: 13px; font-weight: 800; color: #0f172a;
-      text-align: right; max-width: 60%; word-break: break-all;
+      font-size: 12.5px; font-weight: 600; color: #0f172a;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 58%;
     }
 
     .chip-success {
       display: inline-flex; align-items: center; gap: 5px;
       background: #dcfce7; color: #15803d;
-      font-size: 11.5px; font-weight: 800;
-      padding: 3px 10px; border-radius: 99px;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 99px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
     .chip-dot {
-      width: 6px; height: 6px; border-radius: 50%;
+      width: 5px; height: 5px; border-radius: 50%;
       background: #16a34a; flex-shrink: 0;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
 
     /* ── Footer note ── */
     .receipt-note {
-      margin: 12px 18px 0;
-      padding: 10px 14px;
+      margin: 14px 16px 0;
+      padding: 9px 12px;
       background: #f8fafc;
-      border: 1px solid #eef1f6;
-      border-radius: 10px;
+      border: 1px solid #e9eef5;
+      border-radius: 8px;
       text-align: center;
-      font-size: 10px; font-weight: 500; color: #94a3b8; line-height: 1.6;
+      font-size: 9.5px; font-weight: 400; color: #94a3b8; line-height: 1.6;
     }
 
-    /* ── Verified stamp row ── */
+    /* ── Verified stamp ── */
     .stamp-row {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 24px 16px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 20px 14px;
     }
-    .stamp-line { flex: 1; height: 1px; background: #eef1f6; }
+    .stamp-line { flex: 1; height: 1px; background: #e9eef5; }
     .stamp-text {
-      font-size: 9.5px; font-weight: 700; color: #c8d3e0;
-      text-transform: uppercase; letter-spacing: 1.6px;
-      white-space: nowrap;
+      font-size: 8.5px; font-weight: 600; color: #c8d3e0;
+      text-transform: uppercase; letter-spacing: 1.8px; white-space: nowrap;
     }
 
     /* ── Actions ── */
     .receipt-actions {
-      display: flex; gap: 10px;
-      padding: 0 18px 18px;
+      display: flex; gap: 10px; padding: 0 16px 16px;
     }
     .btn-back, .btn-dl {
-      flex: 1; padding: 12px; border-radius: 10px;
-      font-size: 13px; font-weight: 700; font-family: inherit;
+      flex: 1; padding: 11px; border-radius: 9px;
+      font-size: 13px; font-weight: 600; font-family: inherit;
       cursor: pointer; border: none; transition: opacity .2s;
     }
     .btn-back { background: #f1f5f9; color: #475569; }
@@ -294,36 +295,39 @@
 
     /* ══════════════════ PRINT ══════════════════ */
     @media print {
-      @page { size: A4 portrait; margin: 18mm 20mm; }
+      @page {
+        size: A4 portrait;
+        margin: 0;            /* removes browser header/footer zone */
+      }
 
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
       body {
         background: #fff !important;
-        padding: 0 !important;
+        padding: 14mm 0 !important;   /* safe inset without browser chrome */
         margin: 0 !important;
         display: block !important;
       }
 
-      .form-card       { display: none !important; }
-      .receipt-actions { display: none !important; }
+      .form-card        { display: none !important; }
+      .receipt-actions  { display: none !important; }
 
       .receipt-wrap {
         display: block !important;
-        width: 340px !important;
-        max-width: 340px !important;
+        width: 360px !important;
+        max-width: 360px !important;
         margin: 0 auto !important;
       }
 
       .receipt-card {
         box-shadow: none !important;
         border: 1px solid #e2e8f0 !important;
-        border-radius: 0 0 14px 14px !important;
+        border-radius: 0 0 12px 12px !important;
       }
 
-      .bank-header     { border-radius: 14px 14px 0 0 !important; }
+      .bank-header      { border-radius: 12px 12px 0 0 !important; }
       .tick-wrap::before { display: none !important; }
-      .stamp-row       { padding-bottom: 10px !important; }
+      .stamp-row        { padding-bottom: 8px !important; }
     }
   </style>
 </head>
@@ -350,6 +354,8 @@
       <option value="bob">Bank of Baroda</option>
       <option value="canara">Canara Bank</option>
       <option value="federal">Federal Bank</option>
+      <option value="au">AU Small Finance Bank</option>
+      <option value="kerala">Kerala Bank</option>
       <option value="other">Other / Custom</option>
     </select>
   </div>
@@ -366,7 +372,9 @@
   <div class="row-2">
     <div class="field-group">
       <label>Debit A/C No. *</label>
-      <input type="text" id="fromAcc" placeholder="Your account number"/>
+      <select id="fromAcc">
+        <option value="">— Select account —</option>
+      </select>
     </div>
     <div class="field-group">
       <label>To Account No. *</label>
@@ -423,12 +431,24 @@
           </svg>
         </div>
       </div>
-      <div class="hero-label">Amount Paid</div>
+      <div class="hero-status">✓ Transfer Successful</div>
+      <div class="hero-label">Amount Transferred</div>
       <div class="hero-amount" id="r-amount">—</div>
-      <div class="hero-sep"></div>
-      <div class="hero-to">Payment initiated to</div>
-      <div class="hero-payee" id="r-payeeName">—</div>
-      <div class="hero-acc" id="r-toAcc">—</div>
+
+      <!-- Beneficiary card -->
+      <div class="bene-card">
+        <div class="bene-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <div class="bene-info">
+          <div class="bene-label">Paid to</div>
+          <div class="bene-name" id="r-payeeName">—</div>
+          <div class="bene-acc" id="r-toAcc">—</div>
+        </div>
+      </div>
     </div>
 
     <!-- Details -->
@@ -452,6 +472,10 @@
         <span class="d-value" id="r-date">—</span>
       </div>
       <div class="detail-row">
+        <span class="d-label">Beneficiary A/C</span>
+        <span class="d-value" id="r-toAccDetail">—</span>
+      </div>
+      <div class="detail-row">
         <span class="d-label">Debit A/C No.</span>
         <span class="d-value" id="r-fromAcc">—</span>
       </div>
@@ -468,7 +492,7 @@
     </div>
 
     <div class="receipt-actions">
-      <button class="btn-back" onclick="goBack()">← Go Back</button>
+      <button class="btn-back" onclick="goBack()">← Edit</button>
       <button class="btn-dl" id="dl-btn" onclick="downloadReceipt()">⬇ Download / Print</button>
     </div>
 
@@ -477,15 +501,36 @@
 
 <script>
 const BANKS = {
-  sbi:     { name:"State Bank of India",  sub:"The Banker to Every Indian",   logo:"SBICARD.NS.png",        accent:"#1a3c6e" },
-  hdfc:    { name:"HDFC Bank",            sub:"We Understand Your World",      logo:"HDB_BIG.png",           accent:"#004c8f" },
-  icici:   { name:"ICICI Bank",           sub:"Khayal Apka",                   logo:"IBN_BIG.png",           accent:"#f37320" },
-  axis:    { name:"Axis Bank",            sub:"Badhte Ka Naam Zindagi",        logo:"AXISBANK.BO_BIG.png",   accent:"#97144d" },
-  pnb:     { name:"Punjab National Bank", sub:"The Name You Can Bank Upon",    logo:"PNB.NS_BIG.png",        accent:"#f26522" },
-  bob:     { name:"Bank of Baroda",       sub:"India's International Bank",    logo:"BANKBARODA.NS_BIG.png", accent:"#f58220" },
-  canara:  { name:"Canara Bank",          sub:"Together We Can",               logo:"CANBK.NS_BIG.png",      accent:"#00529b" },
-  federal: { name:"Federal Bank",         sub:"Your Perfect Banking Partner",  logo:"FEDERALBNK.NS.png",     accent:"#0033a0" },
+  sbi:     { name:"State Bank of India",        sub:"The Banker to Every Indian",      logo:"SBICARD.NS.png",        accent:"#1eb6e7" },
+  hdfc:    { name:"HDFC Bank",                  sub:"We Understand Your World",        logo:"HDB_BIG.png",           accent:"#004c8f" },
+  icici:   { name:"ICICI Bank",                 sub:"Khayal Apka",                     logo:"IBN_BIG.png",           accent:"#1e5fa8" },
+  axis:    { name:"Axis Bank",                  sub:"Badhte Ka Naam Zindagi",          logo:"AXISBANK.BO_BIG.png",   accent:"#97144d" },
+  pnb:     { name:"Punjab National Bank",       sub:"The Name You Can Bank Upon",      logo:"PNB.NS_BIG.png",        accent:"#8b1538" },
+  bob:     { name:"Bank of Baroda",             sub:"India's International Bank",      logo:"BANKBARODA.NS_BIG.png", accent:"#f26522" },
+  canara:  { name:"Canara Bank",                sub:"Together We Can",                 logo:"CANBK.NS_BIG.png",      accent:"#0079c0" },
+  federal: { name:"Federal Bank",               sub:"Your Perfect Banking Partner",    logo:"FEDERALBNK.NS.png",     accent:"#0033a0" },
+  au:      { name:"AU Small Finance Bank",      sub:"Badlaav Humse Hai",               logo:"AU_Bank.png",           accent:"#7b2882" },
+  kerala:  { name:"Kerala Bank",                sub:"Kerala State Co-operative Bank",  logo:"Kerala_Bank.png",       accent:"#7b1818" },
 };
+
+// ── Fixed 5 account numbers (only last 4 shown) ──
+const ACCOUNTS = [
+  '200145632178',
+  '500378912045',
+  '100967843201',
+  '700234561890',
+  '300812049567',
+];
+
+(function populateAccounts() {
+  const sel = document.getElementById('fromAcc');
+  ACCOUNTS.forEach(acc => {
+    const opt = document.createElement('option');
+    opt.value = acc;
+    opt.textContent = 'XXXX XXXX ' + acc.slice(-4);
+    sel.appendChild(opt);
+  });
+})();
 
 function onBankChange() {
   const k = document.getElementById('bankSelect').value;
@@ -542,7 +587,8 @@ function buildBankHeader(key, customName) {
 function handleSubmit() {
   const key     = document.getElementById('bankSelect').value;
   const txnId   = document.getElementById('txnId').value.trim();
-  const fromAcc = document.getElementById('fromAcc').value.trim();
+  const fromAccFull = document.getElementById('fromAcc').value.trim();
+  const fromAccMask = fromAccFull ? 'XXXX XXXX ' + fromAccFull.slice(-4) : '';
   const toAcc   = document.getElementById('toAcc').value.trim();
   const amount  = document.getElementById('amount').value.trim();
   const payee   = document.getElementById('payeeName').value.trim();
@@ -551,7 +597,7 @@ function handleSubmit() {
   const time    = document.getElementById('txnTime').value;
   const custom  = document.getElementById('otherBankName').value.trim();
 
-  if (!key||!txnId||!fromAcc||!toAcc||!amount||!payee) {
+  if (!key||!txnId||!fromAccFull||!toAcc||!amount||!payee) {
     document.getElementById('err-msg').textContent = 'Please fill in all required (*) fields.';
     return;
   }
@@ -559,15 +605,22 @@ function handleSubmit() {
 
   const accent = (key!=='other' && BANKS[key]) ? BANKS[key].accent : '#1a56db';
 
+  const toAccRaw  = toAcc;
+  // Mask to-account: show last 4 digits only
+  const toAccMask = toAccRaw.length >= 4
+    ? 'XXXX XXXX ' + toAccRaw.slice(-4)
+    : toAccRaw;
+
   document.getElementById('bank-header-area').innerHTML = buildBankHeader(key, custom);
-  document.getElementById('r-amount').textContent    = formatAmount(amount);
-  document.getElementById('r-amount').style.color    = accent;
-  document.getElementById('r-payeeName').textContent = payee.toUpperCase();
-  document.getElementById('r-toAcc').textContent     = toAcc;
-  document.getElementById('r-txnId').textContent     = txnId;
-  document.getElementById('r-txnMode').textContent   = mode;
-  document.getElementById('r-date').textContent      = formatDateTime(date, time);
-  document.getElementById('r-fromAcc').textContent   = fromAcc;
+  document.getElementById('r-amount').textContent      = formatAmount(amount);
+  document.getElementById('r-amount').style.color      = '';
+  document.getElementById('r-payeeName').textContent   = payee;
+  document.getElementById('r-toAcc').textContent       = 'A/c •••• ' + toAccRaw.slice(-4);
+  document.getElementById('r-toAccDetail').textContent = toAccMask;
+  document.getElementById('r-txnId').textContent       = txnId;
+  document.getElementById('r-txnMode').textContent     = mode;
+  document.getElementById('r-date').textContent        = formatDateTime(date, time);
+  document.getElementById('r-fromAcc').textContent     = fromAccMask;
   document.getElementById('dl-btn').style.background = `linear-gradient(135deg,${accent},${accent}cc)`;
 
   document.getElementById('form-page').style.display   = 'none';
