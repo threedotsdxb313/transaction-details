@@ -72,7 +72,7 @@
       box-shadow: 0 4px 18px rgba(26,86,219,.35);
     }
     .submit-btn:hover { opacity: .91; }
-    #err-msg { text-align: center; font-size: 13px; color: #dc2626; margin-top: 8px; min-height: 18px; }
+    #err-msg { font-size: 12.5px; font-weight: 600; color: #dc2626; margin-top: 10px; min-height: 18px; background: #fef2f2; border: 1px solid #fecaca; border-left: 3px solid #dc2626; border-radius: 7px; padding: 8px 11px; display: none; }
 
     /* ══════════════════ RECEIPT ══════════════════ */
     .receipt-wrap {
@@ -370,21 +370,23 @@
     <label>Transaction ID *</label>
     <input type="text" id="txnId" placeholder="e.g. 412345678901"/>
   </div>
-  <div class="row-2">
-    <div class="field-group">
-      <label>Debit A/C No. *</label>
-      <select id="fromAcc">
-        <option value="">— Select account —</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <label>To Account No. *</label>
-      <input type="text" id="toAcc" placeholder="Payee account number"/>
-    </div>
+  <div class="field-group">
+    <label>Debit A/C No. *</label>
+    <select id="fromAcc">
+      <option value="">— Select account —</option>
+    </select>
   </div>
   <div class="field-group">
     <label>Payee Name *</label>
-    <input type="text" id="payeeName" placeholder="e.g. SABDHAN MIAH"/>
+    <input type="text" id="payeeName" placeholder="e.g. Sabdhan Miah"/>
+  </div>
+  <div class="field-group">
+    <label>To Account No. *</label>
+    <input type="text" id="toAcc" placeholder="Payee account number"/>
+  </div>
+  <div class="field-group">
+    <label>Payee IFSC Code *</label>
+    <input type="text" id="payeeIfsc" placeholder="e.g. FDRL0001234" maxlength="11" style="text-transform:uppercase"/>
   </div>
   <div class="row-2">
     <div class="field-group">
@@ -446,8 +448,9 @@
         </div>
         <div class="bene-info">
           <div class="bene-label">Paid to</div>
-          <div class="bene-name" id="r-payeeName">—</div>
+          <div class="bene-name" id="r-payeeName" style="text-transform:uppercase;">—</div>
           <div class="bene-acc" id="r-toAcc">—</div>
+          <div class="bene-acc" id="r-bene-ifsc" style="display:none; color:#94a3b8; letter-spacing:.5px;"></div>
         </div>
       </div>
     </div>
@@ -476,7 +479,7 @@
         <span class="d-label">Debit A/C No.</span>
         <span class="d-value" id="r-fromAcc">—</span>
       </div>
-    </div>
+      </div>
 
     <div class="receipt-note">
       This is a computer-generated statement and does not require any signature.
@@ -533,8 +536,11 @@ function onBankChange() {
   document.getElementById('otherBankField').style.display = k === 'other' ? 'block' : 'none';
 }
 
+/* Amount: strip trailing .00 but keep meaningful decimals (e.g. ₹500.50) */
 function formatAmount(v) {
-  return '₹\u202f' + parseFloat(v).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const n = parseFloat(v);
+  const formatted = n.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  return '₹\u202f' + formatted;
 }
 
 function formatDateTime(ds, ts) {
@@ -581,42 +587,69 @@ function buildBankHeader(key, customName) {
 }
 
 function handleSubmit() {
-  const key     = document.getElementById('bankSelect').value;
-  const txnId   = document.getElementById('txnId').value.trim();
+  const key         = document.getElementById('bankSelect').value;
+  const txnId       = document.getElementById('txnId').value.trim();
   const fromAccFull = document.getElementById('fromAcc').value.trim();
   const fromAccMask = fromAccFull ? 'XXXX XXXX ' + fromAccFull.slice(-4) : '';
-  const toAcc   = document.getElementById('toAcc').value.trim();
-  const amount  = document.getElementById('amount').value.trim();
-  const payee   = document.getElementById('payeeName').value.trim();
-  const mode    = document.getElementById('txnMode').value;
-  const date    = document.getElementById('txnDate').value;
-  const time    = document.getElementById('txnTime').value;
-  const custom  = document.getElementById('otherBankName').value.trim();
+  const toAcc       = document.getElementById('toAcc').value.trim();
+  const amount      = document.getElementById('amount').value.trim();
+  const payee       = document.getElementById('payeeName').value.trim().toUpperCase(); /* ← force caps */
+  const ifsc        = document.getElementById('payeeIfsc').value.trim().toUpperCase();
+  const mode        = document.getElementById('txnMode').value;
+  const date        = document.getElementById('txnDate').value;
+  const time        = document.getElementById('txnTime').value;
+  const custom      = document.getElementById('otherBankName').value.trim();
 
-  if (!key||!txnId||!fromAccFull||!toAcc||!amount||!payee) {
-    document.getElementById('err-msg').textContent = 'Please fill in all required (*) fields.';
+  const checks = [
+    { fail: !key,                                      id: 'bankSelect',   msg: 'Please select a bank.'           },
+    { fail: key==='other' && !custom,                  id: 'otherBankName',msg: 'Please enter the bank name.'     },
+    { fail: !txnId,                                    id: 'txnId',        msg: 'Transaction ID is required.'     },
+    { fail: !fromAccFull,                              id: 'fromAcc',      msg: 'Please select a Debit A/C.'      },
+    { fail: !payee,                                    id: 'payeeName',    msg: 'Payee Name is required.'         },
+    { fail: !toAcc,                                    id: 'toAcc',        msg: 'To Account No. is required.'     },
+    { fail: !ifsc,                                     id: 'payeeIfsc',    msg: 'Payee IFSC Code is required.'    },
+    { fail: !amount || isNaN(amount) || +amount <= 0,  id: 'amount',       msg: 'Please enter a valid amount.'   },
+    { fail: !date,                                     id: 'txnDate',      msg: 'Transaction Date is required.'   },
+    { fail: !time,                                     id: 'txnTime',      msg: 'Transaction Time is required.'   },
+  ];
+
+  checks.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (el) el.style.borderColor = '';
+  });
+
+  const failed = checks.find(c => c.fail);
+  if (failed) {
+    const errEl = document.getElementById('err-msg');
+    errEl.textContent = '\u26a0  ' + failed.msg;
+    errEl.style.display = 'block';
+    const el = document.getElementById(failed.id);
+    if (el) { el.style.borderColor = '#dc2626'; el.focus(); }
     return;
   }
-  document.getElementById('err-msg').textContent = '';
+  const errEl = document.getElementById('err-msg');
+  errEl.textContent = '';
+  errEl.style.display = 'none';
 
   const accent = (key!=='other' && BANKS[key]) ? BANKS[key].accent : '#1a56db';
 
-  const toAccRaw  = toAcc;
-  // Show full account number in the Paid to section
-  const toAccFull = toAccRaw;
-
   document.getElementById('bank-header-area').innerHTML = buildBankHeader(key, custom);
   document.getElementById('r-amount').textContent      = formatAmount(amount);
-  document.getElementById('r-amount').style.color      = '';
   document.getElementById('r-payeeName').textContent   = payee;
-  document.getElementById('r-toAcc').textContent       = 'A/C ' + toAccFull;
+  document.getElementById('r-toAcc').textContent       = 'A/C: ' + toAcc;
   document.getElementById('r-txnId').textContent       = txnId;
   document.getElementById('r-txnMode').textContent     = mode;
   document.getElementById('r-date').textContent        = formatDateTime(date, time);
   document.getElementById('r-fromAcc').textContent     = fromAccMask;
-  document.getElementById('dl-btn').style.background = `linear-gradient(135deg,${accent},${accent}cc)`;
+  document.getElementById('dl-btn').style.background   = `linear-gradient(135deg,${accent},${accent}cc)`;
 
-  document.getElementById('form-page').style.display   = 'none';
+  /* IFSC: show in bene-card only */
+  const beneIfsc = document.getElementById('r-bene-ifsc');
+  beneIfsc.textContent   = 'IFSC: ' + ifsc;
+  beneIfsc.style.display = 'block';
+  beneIfsc.style.color = '#64748b';
+
+  document.getElementById('form-page').style.display    = 'none';
   document.getElementById('receipt-page').style.display = 'block';
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -629,7 +662,7 @@ function downloadReceipt() {
 }
 
 function goBack() {
-  document.getElementById('form-page').style.display   = 'block';
+  document.getElementById('form-page').style.display    = 'block';
   document.getElementById('receipt-page').style.display = 'none';
 }
 </script>
